@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Llm-lL-Icb"/>
+                        <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="Splash" translatesAutoresizingMaskIntoConstraints="NO" id="yf6-kn-Fyn">
+                                <frame key="frameInset" width="240" height="128"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="yf6-kn-Fyn" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="EDM-Su-IOf"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="yf6-kn-Fyn" secondAttribute="bottom" id="EQS-Wk-0LU"/>
+                            <constraint firstItem="yf6-kn-Fyn" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="epj-dW-dEx"/>
+                            <constraint firstAttribute="trailing" secondItem="yf6-kn-Fyn" secondAttribute="trailing" id="suU-aR-aHs"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="yf6-kn-Fyn"/>
+                            </mask>
+                            <mask key="constraints">
+                                <exclude reference="EQS-Wk-0LU"/>
+                                <exclude reference="EDM-Su-IOf"/>
+                                <exclude reference="epj-dW-dEx"/>
+                                <exclude reference="suU-aR-aHs"/>
+                            </mask>
+                        </variation>
+                        <variation key="heightClass=regular-widthClass=compact">
+                            <mask key="subviews">
+                                <include reference="yf6-kn-Fyn"/>
+                            </mask>
+                            <mask key="constraints">
+                                <include reference="EQS-Wk-0LU"/>
+                                <include reference="EDM-Su-IOf"/>
+                                <include reference="epj-dW-dEx"/>
+                                <include reference="suU-aR-aHs"/>
+                            </mask>
+                        </variation>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="52.5" y="375"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Splash" width="239" height="400"/>
+    </resources>
+</document>
