@@ -32,16 +32,15 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ece-y8-K3a">
-                                <frame key="frameInset" minX="-23" minY="-15" width="46" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ece-y8-K3a">
                                 <constraints>
                                     <constraint firstAttribute="width" constant="160" id="aOP-wi-Xt9"/>
                                     <constraint firstAttribute="height" constant="30" id="qVh-Jy-PFk"/>
                                 </constraints>
-                                <state key="normal" title="Login"/>
+                                <state key="normal" title="Login with Gmail"/>
                                 <variation key="default">
                                     <mask key="constraints">
                                         <exclude reference="aOP-wi-Xt9"/>
@@ -98,7 +97,7 @@
                         <viewControllerLayoutGuide type="bottom" id="Q5O-Ec-yWU"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="GSE-dW-e3o">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="590" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="rmr-lb-O9x">
@@ -146,8 +145,8 @@
                                 <exclude reference="JwI-az-4No"/>
                             </mask>
                             <mask key="constraints">
-                                <exclude reference="TY5-O1-07r"/>
                                 <exclude reference="5PA-lb-xgH"/>
+                                <exclude reference="TY5-O1-07r"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=regular-widthClass=compact">
@@ -155,8 +154,8 @@
                                 <include reference="JwI-az-4No"/>
                             </mask>
                             <mask key="constraints">
-                                <include reference="TY5-O1-07r"/>
                                 <include reference="5PA-lb-xgH"/>
+                                <include reference="TY5-O1-07r"/>
                             </mask>
                         </variation>
                     </view>

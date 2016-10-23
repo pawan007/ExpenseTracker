@@ -6,15 +6,49 @@
 //  Copyright © 2016 Narender Kumar. All rights reserved.
 //
 
+import GoogleAPIClient
+import GTMOAuth2
+import SwiftSpinner
+
 import UIKit
 
 class ViewController: UIViewController {
-
+    
+    
+    var emailMessages : NSMutableArray = []
+    private let kTransactionSentence = "transaction of inr " //"subject: transaction alert"
+    private let kKeychainItemName = "Gmail API"
+    private let kClientID = "866202949798-09gknp24snotj0bh87b4jg6ii4chdjd0.apps.googleusercontent.com"
+    
+    // If modifying these scopes, delete your previously saved credentials by
+    // resetting the iOS simulator or uninstall the app.
+    private let scopes = [kGTLAuthScopeGmailReadonly]
+    
+    private let service = GTLServiceGmail()
+    let output = UITextView()
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        output.frame = view.bounds
+        output.editable = false
+        output.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
+        output.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
+        
+        view.addSubview(output);
+        
+        if let auth = GTMOAuth2ViewControllerTouch.authForGoogleFromKeychainForName(
+            kKeychainItemName,
+            clientID: kClientID,
+            clientSecret: nil) {
+            service.authorizer = auth
+        }
+        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -22,11 +56,252 @@ class ViewController: UIViewController {
     
     
     @IBAction func loginAction(sender: AnyObject) {
+        /*
+         if let authorizer = service.authorizer,
+         let canAuth = authorizer.canAuthorize where canAuth {
+         SwiftSpinner.show("Connecting to your gmail account...")
+         fetchLabels()
+         SwiftSpinner.hide()
+         let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+         let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
+         self.navigationController?.pushViewController(vc, animated: true)
+         
+         } else {
+         presentViewController(createAuthController(), animated: true, completion: nil)
+         }
+         */
+        
+        presentViewController(createAuthController(), animated: true, completion: nil)
+    }
+    
+    // MARK: Custom Methods
+    // Construct a query and get a list of upcoming labels from the gmail API
+    func fetchLabels() {
+        SwiftSpinner.show("Connecting to Gmail server...")
+        output.text = "Getting messages..."
+        let query = GTLQueryGmail.queryForUsersMessagesList()
+        query.q = kTransactionSentence
+        query.format = kGTLGmailFormatFull
+        service.executeQuery(query,
+                             delegate: self,
+                             didFinishSelector: #selector(ViewController.displayResultWithTicket(_:finishedWithObject:error:))
+        )
+    }
+    
+    // Display the labels in the UITextView
+    func displayResultWithTicket(ticket : GTLServiceTicket,
+                                 finishedWithObject labelsResponse : GTLGmailListMessagesResponse,
+                                                    error : NSError?) {
+        
+        if let error = error {
+            showAlert("Error", message: error.localizedDescription)
+            return
+        }
+        
+        // HERE
+        let array = labelsResponse.messages as NSArray
+        let batchQuery = GTLBatchQuery ()
+        for message in array as! [GTLGmailMessage] {
+            
+            let midentifier = message.identifier
+            let query = GTLQueryGmail.queryForUsersMessagesGet()
+            query.identifier = midentifier
+            query.format = kGTLGmailFormatFull
+            batchQuery.addQuery(query)
+            
+        }
+        
+        self.service.executeQuery(batchQuery,
+                                  delegate: self,
+                                  didFinishSelector: #selector(ViewController.displayResultWithTicketEachMessages(_:finishedWithObject:error:)))
+    }
+    
+    
+    func parseEmailMessages() {
+        print("messages are \(emailMessages)")
         let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
         let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
         self.navigationController?.pushViewController(vc, animated: true)
+        
     }
-
-
+    
+    func displayResultWithTicketEachMessages(ticket : GTLServiceTicket, finishedWithObject eachMessageResponse : GTLBatchResult, error : NSError?) {
+        
+        SwiftSpinner.hide()
+        
+        if error != nil {
+            print("eroor happende")
+            return
+        } else {
+            
+            /*
+             let msg: String = "You have used your Debit Card linked to Account XXXXXXXX5531 for a transaction of INR 600.00 Info.MPS*EVER GREEN on 23-08-2016 17:12:01. The available balance in your Account is Rs. 2,034.17."
+             */
+            var i = 0;
+            let expenseMessages = eachMessageResponse.successes.allValues
+            for message in expenseMessages as! [GTLGmailMessage] {
+                if let shortMessage : String =   message.snippet           //msg//message.snippet
+                {
+                    let currencyPattern : String = "[Ii][Nn][Rr](\\s*.\\s*\\d*)"
+                    let accountNumPattern : String = "\\b(Account)(XX)\\b"
+                    let timeRegex : String = "(\\d{1,2}[-/.]\\d{1,2}[-/.]\\d{4}[-/. ]\\d\\d?:\\d\\d)"
+                    //Account XXXXXXXX5531
+                    let accountRegex : String = "[Aa][/][Cc][ ][0-9]{6} | [A][c][c][o][u][n][t][ ][X]{8}[0-9]{4}"
+                    //Info: CASH-ATM/00009204.
+                    //Info.MIN*PayTM on
+                    //Info.MPS*EVER GREEN on
+                    //([^ ]+) .*,
+                    //[^\\s]+   -- Ax
+                    let infoRegex : String = "[Ii][Nn][Ff][Oo][  -/.: ]([^[on]]+)*"
+                    // let infoRegex : String = "[Ii][Nn][Ff][Oo][  -/.: ]([^[on]]+)* | [Ii][Nn][Ff][Oo][  -/.: ][^\\s]+"
+                    
+                    i += 1
+                    print (" \(i).")
+                    print ("================ Start here====================")
+                    do {
+                        let regex : NSRegularExpression = try NSRegularExpression.init(pattern: currencyPattern, options: NSRegularExpressionOptions.CaseInsensitive)
+                        
+                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
+                        {
+                            print("Amount : \((shortMessage as NSString).substringWithRange(match.range))")
+                        }
+                        
+                    } catch let error as NSError {
+                        print(error.description)
+                    }
+                    
+                    do {
+                        let regex : NSRegularExpression = try NSRegularExpression.init(pattern: accountNumPattern, options: NSRegularExpressionOptions.CaseInsensitive)
+                        
+                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
+                        {
+                            print("A : \((shortMessage as NSString).substringWithRange(match.range))")
+                            // prints "cow"
+                        }
+                        
+                    } catch let error as NSError {
+                        print(error.description)
+                    }
+                    
+                    do {
+                        let regex : NSRegularExpression = try NSRegularExpression.init(pattern: timeRegex, options: NSRegularExpressionOptions.CaseInsensitive)
+                        
+                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
+                        {
+                            print("Date : \((shortMessage as NSString).substringWithRange(match.range))")
+                            // prints "cow"
+                        }
+                        
+                    } catch let error as NSError {
+                        print(error.description)
+                        print ("Date not found")
+                    }
+                    
+                    do {
+                        let regex : NSRegularExpression = try NSRegularExpression.init(pattern: accountRegex, options: NSRegularExpressionOptions.CaseInsensitive)
+                        
+                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
+                        {
+                            print("Account : \((shortMessage as NSString).substringWithRange(match.range))")
+                            // prints "cow"
+                        }
+                        else {
+                            print ("Account not found 1")
+                        }
+                        
+                    } catch let error as NSError {
+                        print(error.description)
+                        print ("Account not found")
+                    }
+                    
+                    
+                    do {
+                        let regex : NSRegularExpression = try NSRegularExpression.init(pattern: infoRegex, options: NSRegularExpressionOptions.CaseInsensitive)
+                        
+                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
+                        {
+                            print("Information \((shortMessage as NSString).substringWithRange(match.range))")
+                            // prints "cow"
+                        }
+                        else {
+                            print ("Info not found")
+                        }
+                        
+                    } catch let error as NSError {
+                        print(error.description)
+                    }
+                    
+                    
+                    
+                    print ("================ End here====================")
+                    print (" ")
+                    print (" ")
+                    
+                    
+                    
+                    //let scanner : NSScanner = NSScanner.init(string: shortMessage)
+                    // let str = scanner.scanUpToCharactersFrom(NSCharacterSet.symbolCharacterSet())
+                    //let str1 = scanner.scanUpTo(".")
+                    emailMessages.addObject(shortMessage)
+                }
+            }
+            self.parseEmailMessages()
+        }
+    }
+    
+    
+    // Creates the auth controller for authorizing access to Gmail API
+    private func createAuthController() -> GTMOAuth2ViewControllerTouch {
+        let scopeString = scopes.joinWithSeparator(" ")
+        return GTMOAuth2ViewControllerTouch(
+            scope: scopeString,
+            clientID: kClientID,
+            clientSecret: nil,
+            keychainItemName: kKeychainItemName,
+            delegate: self,
+            finishedSelector: #selector(ViewController.viewController(_:finishedWithAuth:error:))
+        )
+    }
+    
+    // Handle completion of the authorization process, and update the Gmail API
+    // with the new credentials.
+    func viewController(vc : UIViewController,
+                        finishedWithAuth authResult : GTMOAuth2Authentication, error : NSError?) {
+        
+        if let error = error {
+            service.authorizer = nil
+            showAlert("Authentication Error", message: error.localizedDescription)
+            return
+        }
+        service.authorizer = authResult
+        dismissViewControllerAnimated(true, completion: nil)
+        
+        if let authorizer = service.authorizer,
+            let canAuth = authorizer.canAuthorize where canAuth {
+            fetchLabels()
+            //  let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+            //  let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
+            //  self.navigationController?.pushViewController(vc, animated: true)
+            
+        } else {}
+    }
+    
+    // Helper for showing an alert
+    func showAlert(title : String, message: String) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: UIAlertControllerStyle.Alert
+        )
+        let ok = UIAlertAction(
+            title: "OK",
+            style: UIAlertActionStyle.Default,
+            handler: nil
+        )
+        alert.addAction(ok)
+        presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    
 }
 
