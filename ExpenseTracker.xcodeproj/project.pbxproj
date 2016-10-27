@@ -25,6 +25,7 @@
 		BDE2CD9C1DBC949300847060 /* NSScanner+.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE2CD9A1DBC949300847060 /* NSScanner+.swift */; };
 		BDE2CD9D1DBC949300847060 /* ParserEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE2CD9B1DBC949300847060 /* ParserEngine.swift */; };
 		BDE2CDA01DBC94E500847060 /* ExpenseCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE2CD9F1DBC94E500847060 /* ExpenseCategory.swift */; };
+		BDE2CDA31DC26A9C00847060 /* AccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE2CDA21DC26A9C00847060 /* AccountInfo.swift */; };
 		F8470D58E153CBFBE19DAEFE /* Pods_ExpenseTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FEEE8B6963BAED6BE7E8ECCF /* Pods_ExpenseTracker.framework */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +52,7 @@
 		BDE2CD9A1DBC949300847060 /* NSScanner+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSScanner+.swift"; sourceTree = "<group>"; };
 		BDE2CD9B1DBC949300847060 /* ParserEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParserEngine.swift; sourceTree = "<group>"; };
 		BDE2CD9F1DBC94E500847060 /* ExpenseCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpenseCategory.swift; sourceTree = "<group>"; };
+		BDE2CDA21DC26A9C00847060 /* AccountInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountInfo.swift; sourceTree = "<group>"; };
 		FEEE8B6963BAED6BE7E8ECCF /* Pods_ExpenseTracker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExpenseTracker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -104,6 +106,7 @@
 		BD5918381DA7E9FE0027AB35 /* ExpenseTracker */ = {
 			isa = PBXGroup;
 			children = (
+				BDE2CDA11DC26A3A00847060 /* Model */,
 				BDE2CD9E1DBC94E500847060 /* ExpenseCategory */,
 				BDE2CD991DBC949300847060 /* GmailHelperClass */,
 				BD5918531DA8157D0027AB35 /* CustomView */,
@@ -157,6 +160,14 @@
 				BDE2CD9F1DBC94E500847060 /* ExpenseCategory.swift */,
 			);
 			path = ExpenseCategory;
+			sourceTree = "<group>";
+		};
+		BDE2CDA11DC26A3A00847060 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				BDE2CDA21DC26A9C00847060 /* AccountInfo.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -292,6 +303,7 @@
 				BD59183C1DA7E9FE0027AB35 /* ViewController.swift in Sources */,
 				BDE2CD9D1DBC949300847060 /* ParserEngine.swift in Sources */,
 				BD874FF21DBAAA93007F1CB6 /* SettingCell.swift in Sources */,
+				BDE2CDA31DC26A9C00847060 /* AccountInfo.swift in Sources */,
 				BD59184C1DA7F39C0027AB35 /* DashboardVC.swift in Sources */,
 				BD59183A1DA7E9FE0027AB35 /* AppDelegate.swift in Sources */,
 				BDAE43D31DAE7E6800D64241 /* GraphViewCell.swift in Sources */,

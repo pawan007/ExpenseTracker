@@ -92,7 +92,6 @@ class ViewController: UIViewController {
     func displayResultWithTicket(ticket : GTLServiceTicket,
                                  finishedWithObject labelsResponse : GTLGmailListMessagesResponse,
                                                     error : NSError?) {
-        
         if let error = error {
             showAlert("Error", message: error.localizedDescription)
             return
@@ -140,7 +139,31 @@ class ViewController: UIViewController {
             var i = 0;
             let expenseMessages = eachMessageResponse.successes.allValues
             for message in expenseMessages as! [GTLGmailMessage] {
-                if let shortMessage : String =   message.snippet           //msg//message.snippet
+                
+                
+                
+                
+                let parts = message.payload.body
+                var decodedBody: NSString?
+                if parts != nil {
+                   // let body: AnyObject? = parts.valueForKey("body")
+                    if parts!.valueForKey("data") != nil {
+                        var base64DataString =  parts!.valueForKey("data") as! String
+                        base64DataString = base64DataString.stringByReplacingOccurrencesOfString("_", withString: "/", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                        base64DataString = base64DataString.stringByReplacingOccurrencesOfString("-", withString: "+", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                        
+                        let decodedData = NSData(base64EncodedString: base64DataString, options:NSDataBase64DecodingOptions(rawValue: 0))
+                        decodedBody = NSString(data: decodedData!, encoding: NSUTF8StringEncoding)
+                    }
+                    
+                }
+                
+                
+                
+                
+                
+                
+                if let shortMessage : String = decodedBody as? String //message.payload.body.data //message.snippet  //msg//message.snippet
                 {
                     let currencyPattern : String = "[Ii][Nn][Rr](\\s*.\\s*\\d*)"
                     let accountNumPattern : String = "\\b(Account)(XX)\\b"
@@ -301,7 +324,25 @@ class ViewController: UIViewController {
         alert.addAction(ok)
         presentViewController(alert, animated: true, completion: nil)
     }
+}
+
+
+
+import UIKit
+extension String {
     
+    func fromBase64() -> String? {
+        guard let data = NSData(base64EncodedString: self, options: NSDataBase64DecodingOptions(rawValue: 0)) else {
+            return nil
+        }
+        return String(data: data, encoding: NSUTF8StringEncoding)!
+    }
     
+    func toBase64() -> String? {
+        guard let data = self.dataUsingEncoding(NSUTF8StringEncoding) else {
+            return nil
+        }
+        return data.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(rawValue: 0))
+    }
 }
 
