@@ -14,6 +14,10 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var bgEffectView: UIVisualEffectView!
+    
+    @IBOutlet var bankBtn: [UIButton]!
+    
     
     var emailMessages : NSMutableArray = []
     private let kTransactionSentence = "transaction of inr " //"subject: transaction alert"
@@ -28,7 +32,6 @@ class ViewController: UIViewController {
     let output = UITextView()
     
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -37,8 +40,7 @@ class ViewController: UIViewController {
         output.editable = false
         output.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
         output.autoresizingMask = [.FlexibleHeight, .FlexibleWidth]
-        
-        view.addSubview(output);
+        //view.addSubview(output); TODO: look into this
         
         if let auth = GTMOAuth2ViewControllerTouch.authForGoogleFromKeychainForName(
             kKeychainItemName,
@@ -46,12 +48,21 @@ class ViewController: UIViewController {
             clientSecret: nil) {
             service.authorizer = auth
         }
-        
+        bgEffectView.layer.cornerRadius = 3.5
+        bgEffectView.clipsToBounds = true
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    
+    @IBAction func bankBtnAction(_ sender: UIButton) {
+        for tempBtn in self.bankBtn as [UIButton] {
+            tempBtn.selected = false
+        }
+        sender.selected = true;
     }
     
     
@@ -158,11 +169,6 @@ class ViewController: UIViewController {
                     
                 }
                 
-                
-                
-                
-                
-                
                 if let shortMessage : String = decodedBody as? String //message.payload.body.data //message.snippet  //msg//message.snippet
                 {
                     let currencyPattern : String = "[Ii][Nn][Rr](\\s*.\\s*\\d*)"
@@ -175,8 +181,15 @@ class ViewController: UIViewController {
                     //Info.MPS*EVER GREEN on
                     //([^ ]+) .*,
                     //[^\\s]+   -- Ax
-                    let infoRegex : String = "[Ii][Nn][Ff][Oo][  -/.: ]([^[on]]+)*"
+                    let infoRegex : String = "[Ii][Nn][Ff][Oo][  -/.: ]([^[on]]+).*"
                     // let infoRegex : String = "[Ii][Nn][Ff][Oo][  -/.: ]([^[on]]+)* | [Ii][Nn][Ff][Oo][  -/.: ][^\\s]+"
+                    
+                    //debited
+                    let debitedPattern : String = "[Dd][Ee][Bb][Ii][Tt][Ee][Dd]"
+                    /*
+                    Your a/c 027012 is debited INR 2000.00 on 25-10-2015 21:59:26 A/c Bal is INR 15866.53 Info: CASH-ATM/01076095. Get Axis Mobile: m.axisbank.com/cwdl
+                    nYour a/c 027012 is debited INR 2.00 on 30-03-2016 22:47:55 Info: PUR/AMAZON INTERNET SERVIC/NEW DELHI/AMAZON INTERNET SERVIC
+                     */
                     
                     i += 1
                     print (" \(i).")
@@ -186,7 +199,11 @@ class ViewController: UIViewController {
                         
                         if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
                         {
-                            print("Amount : \((shortMessage as NSString).substringWithRange(match.range))")
+                           // print("Amount : \((shortMessage as NSString).substringWithRange(match.range))")
+                            let val:String = ((shortMessage as NSString).substringWithRange(match.range))
+                            let replaced = val.stringByReplacingOccurrencesOfString("INR", withString: "")
+                            let trimmedString = replaced.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+                            print("Amount : \(trimmedString)")
                         }
                         
                     } catch let error as NSError {
@@ -243,11 +260,24 @@ class ViewController: UIViewController {
                         
                         if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
                         {
-                            print("Information \((shortMessage as NSString).substringWithRange(match.range))")
-                            // prints "cow"
+                            print("Information : \((shortMessage as NSString).substringWithRange(match.range))")
                         }
                         else {
-                            print ("Info not found")
+                            print ("Information : Info not found")
+                        }
+                        
+                    } catch let error as NSError {
+                        print(error.description)
+                    }
+                    
+                    
+                    do {
+                        let regex : NSRegularExpression = try NSRegularExpression.init(pattern: debitedPattern, options: NSRegularExpressionOptions.CaseInsensitive)
+                        if regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count)) != nil {
+                            print("Debited : YES")
+                        }
+                        else {
+                            print("Debited : NO")
                         }
                         
                     } catch let error as NSError {
@@ -260,7 +290,14 @@ class ViewController: UIViewController {
                     print (" ")
                     print (" ")
                     
-                    
+                    /*
+                    ================ Start here====================
+                    Amount : 30148
+                    Account not found 1
+                    Information : Info not found
+                    Debited : NO
+                    ================ End here====================
+                     */
                     
                     //let scanner : NSScanner = NSScanner.init(string: shortMessage)
                     // let str = scanner.scanUpToCharactersFrom(NSCharacterSet.symbolCharacterSet())

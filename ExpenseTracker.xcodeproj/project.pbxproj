@@ -41,6 +41,7 @@
 		BD5918431DA7E9FF0027AB35 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BD5918451DA7E9FF0027AB35 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BD59184B1DA7F39C0027AB35 /* DashboardVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardVC.swift; sourceTree = "<group>"; };
+		BD72C2CA1DEAC76B006F038E /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		BD874FEC1DBA6E52007F1CB6 /* DetailsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailsCell.swift; sourceTree = "<group>"; };
 		BD874FED1DBA6E52007F1CB6 /* DetailsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailsCell.xib; sourceTree = "<group>"; };
 		BD874FF01DBAAA93007F1CB6 /* SettingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingCell.swift; sourceTree = "<group>"; };
@@ -118,6 +119,7 @@
 				BD5918421DA7E9FF0027AB35 /* LaunchScreen.storyboard */,
 				BD5918451DA7E9FF0027AB35 /* Info.plist */,
 				BD59184B1DA7F39C0027AB35 /* DashboardVC.swift */,
+				BD72C2CA1DEAC76B006F038E /* BridgingHeader.h */,
 			);
 			path = ExpenseTracker;
 			sourceTree = "<group>";
@@ -424,6 +426,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4C3BFE7BC32944C242743FEB /* Pods-ExpenseTracker.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = ExpenseTracker/Info.plist;
@@ -431,6 +434,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Appster.ExpensesTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ExpenseTracker/BridgingHeader.h";
 				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
@@ -439,6 +443,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 282C86B7566E85884EF95185 /* Pods-ExpenseTracker.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = ExpenseTracker/Info.plist;
@@ -446,6 +451,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Appster.ExpensesTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ExpenseTracker/BridgingHeader.h";
 				SWIFT_VERSION = 2.3;
 			};
 			name = Release;

@@ -17,4 +17,5 @@ class AccountInfo: RLMObject {
     dynamic var amount: Double = 0.0
     dynamic var transactionDate = NSDate()
     dynamic var transactionInfo = ""
+    dynamic var debited = ""
 }

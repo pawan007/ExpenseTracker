@@ -7,10 +7,32 @@
 //
 
 import UIKit
+import THCalendarDatePicker
+import KNSemiModalViewController_hons82
 
-class DashboardVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+
+class DashboardVC: UIViewController, UITableViewDataSource, UITableViewDelegate, THDatePickerDelegate {
     
     @IBOutlet weak var tblView: UITableView!
+    //----------------Date-------------//
+    var curDate:NSDate!
+    var formatter:NSDateFormatter!
+    lazy var datePicker:THDatePickerViewController = {
+        var dp = THDatePickerViewController.datePicker()
+        dp.delegate = self
+        dp.setAllowClearDate(false)
+        dp.setClearAsToday(true)
+        dp.setAutoCloseOnSelectDate(false)
+        dp.setAllowSelectionOfSelectedDate(true)
+        dp.setDisableHistorySelection(true)
+        dp.setDisableFutureSelection(false)
+        //dp.autoCloseCancelDelay = 5.0
+        dp.selectedBackgroundColor = UIColor(red: 125/255.0, green: 208/255.0, blue: 0/255.0, alpha: 1.0)
+        dp.currentDateColor = UIColor(red: 242/255.0, green: 121/255.0, blue: 53/255.0, alpha: 1.0)
+        dp.currentDateColorSelected = UIColor.yellowColor()
+        return dp
+    }()
+    //-----------------------------------//
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +44,13 @@ class DashboardVC: UIViewController, UITableViewDataSource, UITableViewDelegate 
         tblView.registerNib(UINib(nibName: "SettingCell", bundle: nil), forCellReuseIdentifier: "SettingCell")
         tblView.estimatedRowHeight = 590
         tblView.rowHeight = UITableViewAutomaticDimension
-
+        
+        curDate = NSDate()
+        formatter = NSDateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy --- HH:mm"
+        refreshTitle()
+        
+        showDate()
     }
     
     override func didReceiveMemoryWarning() {
@@ -38,6 +66,48 @@ class DashboardVC: UIViewController, UITableViewDataSource, UITableViewDelegate 
         self.navigationController?.popViewControllerAnimated(true)
     }
     
+    func refreshTitle() {
+      //  dateButton.setTitle((curDate != nil ? formatter.stringFromDate(curDate) : "No date selected"), forState: UIControlState.Normal)
+        print("current date \(curDate)")
+    }
+    
+    func showDate() {
+            datePicker.date = curDate
+            datePicker.setDateHasItemsCallback({(date:NSDate!) -> Bool in
+                let tmp = (arc4random() % 30) + 1
+                return tmp % 5 == 0
+            })
+        /*
+            presentSemiViewController(datePicker, withOptions: [
+                KNSemiModalOptionKeys.pushParentBack    : NSNumber(bool: false),
+                KNSemiModalOptionKeys.animationDuration : NSNumber(float: 1.0),
+                KNSemiModalOptionKeys.shadowOpacity     : NSNumber(float: 0.3)
+                ])
+         */
+        
+        self.presentSemiViewController(datePicker, withOptions:
+            [KNSemiModalOptionKeys.pushParentBack.takeRetainedValue():false,
+                KNSemiModalOptionKeys.parentAlpha.takeRetainedValue():1.0,
+                KNSemiModalOptionKeys.animationDuration.takeRetainedValue():0.3])
+    }
+    
+    // MARK: THDatePickerDelegate
+    func datePickerDonePressed(datePicker: THDatePickerViewController!) {
+        curDate = datePicker.date
+        refreshTitle()
+        dismissSemiModalView()
+    }
+    
+    func datePickerCancelPressed(datePicker: THDatePickerViewController!) {
+        dismissSemiModalView()
+    }
+    
+    func datePicker(datePicker: THDatePickerViewController!, selectedDate: NSDate!) {
+        let tmp = formatter.stringFromDate(selectedDate)
+        print("Date selected: \(tmp)")
+    }
+    
+    // MARK: TableView
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
     }

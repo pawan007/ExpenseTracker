@@ -13,7 +13,8 @@ target 'ExpenseTracker' do
   
   # Loader
   pod 'SwiftSpinner', ' ~> 0.6'
+  # Calendar -- https://github.com/hons82/THCalendarDatePicker
+  pod 'THCalendarDatePicker', '~> 1.2.6'
   
-  # Pods for ExpenseTracker
 
 end
