@@ -432,7 +432,7 @@
 				INFOPLIST_FILE = ExpenseTracker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Appster.ExpensesTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mobirizer.ExpensesTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ExpenseTracker/BridgingHeader.h";
 				SWIFT_VERSION = 2.3;
@@ -449,7 +449,7 @@
 				INFOPLIST_FILE = ExpenseTracker/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Appster.ExpensesTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mobirizer.ExpensesTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ExpenseTracker/BridgingHeader.h";
 				SWIFT_VERSION = 2.3;

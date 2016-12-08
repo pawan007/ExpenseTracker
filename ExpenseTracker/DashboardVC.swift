@@ -50,7 +50,7 @@ class DashboardVC: UIViewController, UITableViewDataSource, UITableViewDelegate,
         formatter.dateFormat = "dd/MM/yyyy --- HH:mm"
         refreshTitle()
         
-        showDate()
+        // showDate()
     }
     
     override func didReceiveMemoryWarning() {
@@ -115,7 +115,7 @@ class DashboardVC: UIViewController, UITableViewDataSource, UITableViewDelegate,
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if(indexPath.row == 0) {
             let cell:GraphViewCell = (tblView.dequeueReusableCellWithIdentifier("GraphViewCell", forIndexPath: indexPath) as? GraphViewCell)!
-            cell.setGraph()
+             cell.setGraph()
             return cell
         }
         else if(indexPath.row == 1) {

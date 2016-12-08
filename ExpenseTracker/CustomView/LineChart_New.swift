@@ -10,6 +10,11 @@ public protocol LineChartDelegate {
 }
 
 /**
+ * Define graph Y axis line height
+ */
+let GRAPH_Y_AXIS_HEIGHT:CGFloat = 30
+
+/**
  * LineChart
  */
 public class LineChart: UIView {
@@ -216,7 +221,7 @@ public class LineChart: UIView {
         let ctx: CGContextRef = UIGraphicsGetCurrentContext()!
         CGContextSaveGState(ctx)
         let rect = CGRectMake(0, 0, width, height)
-        let clipPath: CGPathRef = UIBezierPath(roundedRect: rect, cornerRadius: 8.0).CGPath
+        let clipPath: CGPathRef = UIBezierPath(roundedRect: rect, cornerRadius: 4.0).CGPath
         CGContextAddPath(ctx, clipPath)
         CGContextSetFillColorWithColor(ctx, UIColor.clearColor().CGColor)
         CGContextClosePath(ctx)
@@ -230,7 +235,7 @@ public class LineChart: UIView {
         
         
         
-        self.drawingHeight = self.bounds.height - (2 * y.axis.inset)
+        self.drawingHeight = -GRAPH_Y_AXIS_HEIGHT + self.bounds.height - (2 * y.axis.inset) // Narender
         self.drawingWidth = self.bounds.width - (2 * x.axis.inset)
         
         // remove all labels
@@ -409,7 +414,14 @@ public class LineChart: UIView {
         // draw y-axis
         y.axis.color.setStroke()
         path.moveToPoint(CGPoint(x: x.axis.inset, y: height - y.axis.inset))
-        path.addLineToPoint(CGPoint(x: x.axis.inset, y: y.axis.inset))
+        path.addLineToPoint(CGPoint(x: x.axis.inset, y: +GRAPH_Y_AXIS_HEIGHT+y.axis.inset)) // Narender
+        path.stroke()
+        
+        // draw Top x-axis
+        x.axis.color.setStroke()
+        let y00:CGFloat = 35//height - self.y.scale(0) - y.axis.inset
+        path.moveToPoint(CGPoint(x: -20+x.axis.inset, y: y00)) //20 Narender
+        path.addLineToPoint(CGPoint(x: 20+width - x.axis.inset, y: y00)) //20 Narender
         path.stroke()
     }
     
@@ -523,7 +535,7 @@ public class LineChart: UIView {
         let path = UIBezierPath()
         var x1: CGFloat
         let y1: CGFloat = self.bounds.height - y.axis.inset
-        let y2: CGFloat = y.axis.inset
+        let y2: CGFloat = 50//y.axis.inset //50 Narender
         let (start, stop, step) = self.x.ticks
         for var i: CGFloat = start; i <= stop; i += step {
             x1 = self.x.scale(i) + x.axis.inset
@@ -596,8 +608,6 @@ public class LineChart: UIView {
             self.addSubview(label)
         }
     }
-    
-    
     
     /**
      * Draw y labels.

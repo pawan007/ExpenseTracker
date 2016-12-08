@@ -9,6 +9,7 @@
 import GoogleAPIClient
 import GTMOAuth2
 import SwiftSpinner
+import RealmSwift
 
 import UIKit
 
@@ -57,32 +58,40 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    
+    /*
     @IBAction func bankBtnAction(_ sender: UIButton) {
         for tempBtn in self.bankBtn as [UIButton] {
             tempBtn.selected = false
         }
         sender.selected = true;
     }
+    */
     
     
     @IBAction func loginAction(sender: AnyObject) {
         /*
+        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
+        self.navigationController?.pushViewController(vc, animated: true)
+        */
+
+        
          if let authorizer = service.authorizer,
          let canAuth = authorizer.canAuthorize where canAuth {
          SwiftSpinner.show("Connecting to your gmail account...")
          fetchLabels()
-         SwiftSpinner.hide()
-         let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
-         let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
-         self.navigationController?.pushViewController(vc, animated: true)
-         
+        
+        // SwiftSpinner.hide()
+        // let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+        // let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
+        // self.navigationController?.pushViewController(vc, animated: true)
          } else {
          presentViewController(createAuthController(), animated: true, completion: nil)
          }
-         */
+ 
         
-        presentViewController(createAuthController(), animated: true, completion: nil)
+        
+        // presentViewController(createAuthController(), animated: true, completion: nil)
     }
     
     // MARK: Custom Methods
@@ -128,6 +137,7 @@ class ViewController: UIViewController {
     
     
     func parseEmailMessages() {
+        print("End all mail")
         print("messages are \(emailMessages)")
         let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
         let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
@@ -151,8 +161,13 @@ class ViewController: UIViewController {
             let expenseMessages = eachMessageResponse.successes.allValues
             for message in expenseMessages as! [GTLGmailMessage] {
                 
-                
-                
+                var dataValue        = 0
+                var amount: Double   = 0.00
+                var date             = NSDate()
+                var gMailId          = ""
+                var accountNo        = ""
+                var information      = ""
+                var debited          = "credited"
                 
                 let parts = message.payload.body
                 var decodedBody: NSString?
@@ -194,9 +209,10 @@ class ViewController: UIViewController {
                     i += 1
                     print (" \(i).")
                     print ("================ Start here====================")
+                    print("Mail ID : \(message.identifier)")
+                    gMailId = message.identifier
                     do {
                         let regex : NSRegularExpression = try NSRegularExpression.init(pattern: currencyPattern, options: NSRegularExpressionOptions.CaseInsensitive)
-                        
                         if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
                         {
                            // print("Amount : \((shortMessage as NSString).substringWithRange(match.range))")
@@ -204,6 +220,8 @@ class ViewController: UIViewController {
                             let replaced = val.stringByReplacingOccurrencesOfString("INR", withString: "")
                             let trimmedString = replaced.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
                             print("Amount : \(trimmedString)")
+                            dataValue += 1
+                            amount = Double(trimmedString)!
                         }
                         
                     } catch let error as NSError {
@@ -212,11 +230,8 @@ class ViewController: UIViewController {
                     
                     do {
                         let regex : NSRegularExpression = try NSRegularExpression.init(pattern: accountNumPattern, options: NSRegularExpressionOptions.CaseInsensitive)
-                        
-                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
-                        {
+                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count)) {
                             print("A : \((shortMessage as NSString).substringWithRange(match.range))")
-                            // prints "cow"
                         }
                         
                     } catch let error as NSError {
@@ -225,11 +240,15 @@ class ViewController: UIViewController {
                     
                     do {
                         let regex : NSRegularExpression = try NSRegularExpression.init(pattern: timeRegex, options: NSRegularExpressionOptions.CaseInsensitive)
-                        
-                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
-                        {
+                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count)) {
                             print("Date : \((shortMessage as NSString).substringWithRange(match.range))")
-                            // prints "cow"
+                            dataValue += 1
+                            
+                            let dateVal:String = ((shortMessage as NSString).substringWithRange(match.range))
+                            let dateFormatter = NSDateFormatter()
+                            dateFormatter.dateFormat = "dd-MM-yyyy HH:mm" //25-10-2015 21:59 //yyyy-MM-dd'T'HH:mm:ss
+                            date = dateFormatter.dateFromString(dateVal)!
+                            print("DateChange : \(date)")
                         }
                         
                     } catch let error as NSError {
@@ -239,13 +258,11 @@ class ViewController: UIViewController {
                     
                     do {
                         let regex : NSRegularExpression = try NSRegularExpression.init(pattern: accountRegex, options: NSRegularExpressionOptions.CaseInsensitive)
-                        
-                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
-                        {
+                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count)) {
                             print("Account : \((shortMessage as NSString).substringWithRange(match.range))")
-                            // prints "cow"
-                        }
-                        else {
+                            dataValue += 1
+                            accountNo = (shortMessage as NSString).substringWithRange(match.range)
+                        } else {
                             print ("Account not found 1")
                         }
                         
@@ -254,15 +271,14 @@ class ViewController: UIViewController {
                         print ("Account not found")
                     }
                     
-                    
                     do {
                         let regex : NSRegularExpression = try NSRegularExpression.init(pattern: infoRegex, options: NSRegularExpressionOptions.CaseInsensitive)
                         
-                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
-                        {
+                        if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count)) {
                             print("Information : \((shortMessage as NSString).substringWithRange(match.range))")
-                        }
-                        else {
+                            dataValue += 1
+                            information = (shortMessage as NSString).substringWithRange(match.range)
+                        } else {
                             print ("Information : Info not found")
                         }
                         
@@ -270,21 +286,19 @@ class ViewController: UIViewController {
                         print(error.description)
                     }
                     
-                    
                     do {
                         let regex : NSRegularExpression = try NSRegularExpression.init(pattern: debitedPattern, options: NSRegularExpressionOptions.CaseInsensitive)
                         if regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count)) != nil {
                             print("Debited : YES")
+                            debited = "debited"
                         }
                         else {
                             print("Debited : NO")
                         }
-                        
+                        dataValue += 1
                     } catch let error as NSError {
                         print(error.description)
                     }
-                    
-                    
                     
                     print ("================ End here====================")
                     print (" ")
@@ -303,10 +317,40 @@ class ViewController: UIViewController {
                     // let str = scanner.scanUpToCharactersFrom(NSCharacterSet.symbolCharacterSet())
                     //let str1 = scanner.scanUpTo(".")
                     emailMessages.addObject(shortMessage)
+                    
+                    //-------- Get min 2 value or data to insert in db -------------//
+                    if(dataValue > 2) {
+                        let realm = try! Realm()
+                        //let accountInfo = AccountInfo()
+                        let accountInfo = AccountInfo.getModel()
+                        accountInfo.id = accountInfo.IncrementaID()
+                        accountInfo.gMailId = gMailId
+                        accountInfo.accountNum = accountNo
+                        accountInfo.amount = amount
+                        accountInfo.transactionDate = date
+                        accountInfo.transactionInfo = information
+                        accountInfo.debitCredit = debited
+                                                
+                        let queryRecordID = realm.objects(AccountInfo).filter("gMailId == '\(gMailId)'")
+                        if queryRecordID.count == 0 {
+                            try! realm.write {
+                                realm.add(accountInfo)
+                            }
+                        }
+                    }
+                    //-------------------------------------------------------------//
                 }
             }
             self.parseEmailMessages()
         }
+        
+        let current = NSDate()
+        let sevenDaysAgo = NSCalendar.currentCalendar().dateByAddingUnit(.Day, value: -30,
+                                                                         toDate: NSDate(), options: NSCalendarOptions(rawValue: 0))
+        print("sevenDaysAgo : \(sevenDaysAgo)")
+        let realm = try! Realm()
+        let messages = realm.objects(AccountInfo).filter("transactionDate > %@ AND transactionDate <= %@", sevenDaysAgo!, current)
+        print("restult : \(messages)")
     }
     
     

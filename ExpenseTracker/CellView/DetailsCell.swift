@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class DetailsCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
     
@@ -29,6 +30,9 @@ class DetailsCell: UITableViewCell, UITableViewDataSource, UITableViewDelegate {
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        let realm = try! Realm()
+        let objects = realm.objects(AccountInfo).toArray(AccountInfo).count
+        print("------ : \(objects)");
         return 1
     }
     

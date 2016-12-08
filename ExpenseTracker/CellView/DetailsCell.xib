@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -13,26 +12,22 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <frame key="frameInset" width="320" height="480"/>
+                <frame key="frameInset" width="320" height="479"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="DetailsCell" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="46" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="2qH-wh-CEd">
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="r7I-68-UAk">
+                        <frame key="frameInset" minX="8" minY="8" width="286" height="455"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <connections>
-                            <outlet property="dataSource" destination="KGk-i7-Jjw" id="jwg-yn-rcg"/>
-                            <outlet property="delegate" destination="KGk-i7-Jjw" id="8lU-E0-zmG"/>
+                            <outlet property="dataSource" destination="KGk-i7-Jjw" id="i7y-Fv-tx1"/>
+                            <outlet property="delegate" destination="KGk-i7-Jjw" id="hkO-zq-Aqa"/>
                         </connections>
                     </tableView>
                 </subviews>
-                <constraints>
-                    <constraint firstAttribute="trailingMargin" secondItem="2qH-wh-CEd" secondAttribute="trailing" id="Ae5-D0-PGH"/>
-                    <constraint firstItem="2qH-wh-CEd" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="-8" id="QHz-38-QFp"/>
-                    <constraint firstItem="2qH-wh-CEd" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="-8" id="VQx-Bt-TS2"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="2qH-wh-CEd" secondAttribute="bottom" constant="-8.5" id="tyk-o5-IE5"/>
-                </constraints>
             </tableViewCellContentView>
             <connections>
-                <outlet property="tblView" destination="2qH-wh-CEd" id="GqL-OP-V5Y"/>
+                <outlet property="tblView" destination="r7I-68-UAk" id="GZP-m5-8mi"/>
             </connections>
             <point key="canvasLocation" x="37" y="12"/>
         </tableViewCell>
