@@ -22,6 +22,7 @@ class GraphViewCell: UITableViewCell, LineChartDelegate, THDatePickerDelegate {
     var startDate:NSDate = NSDate()
     var endDate:NSDate = NSDate()
     var agoDays:Int = -15
+    var calendarTagValue:Int = 0
     
     var amountArray = [CGFloat]()
     var dateArray = [String]()
@@ -31,6 +32,15 @@ class GraphViewCell: UITableViewCell, LineChartDelegate, THDatePickerDelegate {
     @IBOutlet weak var startDateLbl: UILabel!
     @IBOutlet weak var endDateLbl: UILabel!
     
+    @IBOutlet weak var totalExpLbl: UILabel!
+    @IBOutlet weak var avgExpLbl: UILabel!
+    @IBOutlet weak var numberOfTransLbl: UILabel!
+    
+    var totalExp: CGFloat = 0.0
+    var avgExpExp: CGFloat = 0.0
+    var lastYearExp: CGFloat = 0.0
+    var totalTrantion: Int = 0
+    
     var myView:UIViewController = UIViewController()
     
     //----------------Date-------------//
@@ -38,7 +48,7 @@ class GraphViewCell: UITableViewCell, LineChartDelegate, THDatePickerDelegate {
     var formatter:NSDateFormatter!
     var datePicker:THDatePickerViewController = {
         var dp = THDatePickerViewController.datePicker()
-       // dp.delegate = self
+        //dp.delegate = self
         dp.setAllowClearDate(false)
         dp.setClearAsToday(true)
         dp.setAutoCloseOnSelectDate(false)
@@ -113,6 +123,10 @@ class GraphViewCell: UITableViewCell, LineChartDelegate, THDatePickerDelegate {
     }
     
     func setGraph() {
+        var totalNumberOfData = 0
+        avgExpExp = 0.0
+        lastYearExp = 0.0
+        
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = .LongStyle
         
@@ -133,9 +147,13 @@ class GraphViewCell: UITableViewCell, LineChartDelegate, THDatePickerDelegate {
             let dateFormatter1 = NSDateFormatter()
             dateFormatter1.dateFormat = "dd/MMM"
             for dataArray in messages {
+                totalNumberOfData += 1
+                totalTrantion = totalNumberOfData
+                totalExp += CGFloat(dataArray.amount)
                 amountArray.append(CGFloat(dataArray.amount))
                 let dd = dataArray.transactionDate
                 dateArray.append(dateFormatter1.stringFromDate(dd))
+                avgExpExp = totalExp/CGFloat(totalNumberOfData)
             }
         }
 
@@ -167,12 +185,6 @@ class GraphViewCell: UITableViewCell, LineChartDelegate, THDatePickerDelegate {
             }
         }
         
-        for temp in gView.subviews {
-            if temp.isKindOfClass(LineChart) {
-                temp.removeFromSuperview()
-            }
-        }
-        
         lineChart = LineChart()
         lineChart.animation.enabled = true
         lineChart.area = true
@@ -192,6 +204,7 @@ class GraphViewCell: UITableViewCell, LineChartDelegate, THDatePickerDelegate {
         gView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[chart]-|", options: [], metrics: nil, views: views))
         gView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[label]-[chart(==200)]", options: [], metrics: nil, views: views))
         
+        resetDataLabel()
         
        // showDate()
         
@@ -247,9 +260,27 @@ class GraphViewCell: UITableViewCell, LineChartDelegate, THDatePickerDelegate {
     }
     
     func datePicker(datePicker: THDatePickerViewController!, selectedDate: NSDate!) {
-       // let tmp = formatter.stringFromDate(selectedDate)
-       // print("Date selected: \(tmp)")
+        let tmp = formatter.stringFromDate(selectedDate)
+        print("Date selected: \(tmp)")
     }
+    
+    //MARK: Calendar button action
+    @IBAction func startDateBtnAction(sender: UIButton) {
+        calendarTagValue = sender.tag
+        showDate()
+    }
+    
+    @IBAction func endDateBtnAction(sender: UIButton) {
+        calendarTagValue = sender.tag
+    }
+    
+    //MARK: Reset Label Data
+    func resetDataLabel() {
+        totalExpLbl.text = "\(totalExp)"
+        avgExpLbl.text = "\(avgExpExp)"
+        numberOfTransLbl.text = "\(totalTrantion)"
+    }
+    
 }
 
 

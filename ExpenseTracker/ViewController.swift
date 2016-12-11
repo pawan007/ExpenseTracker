@@ -98,6 +98,18 @@ class ViewController: UIViewController {
     // MARK: Custom Methods
     // Construct a query and get a list of upcoming labels from the gmail API
     func fetchLabels() {
+        /*
+        let qualityOfServiceClass = QOS_CLASS_BACKGROUND
+        let backgroundQueue = dispatch_get_global_queue(qualityOfServiceClass, 0)
+        dispatch_async(backgroundQueue, {
+            print("This is run on the background queue")
+            SwiftSpinner.show("Connecting to Gmail server...")
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                print("This is run on the main queue, after the previous code in outer block")
+            })
+        })
+        */
+        
         SwiftSpinner.show("Connecting to Gmail server...")
         output.text = "Getting messages..."
         let query = GTLQueryGmail.queryForUsersMessagesList()
