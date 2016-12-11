@@ -8,13 +8,20 @@
 
 import UIKit
 import RealmSwift
+import THCalendarDatePicker
+import KNSemiModalViewController_hons82
 
-class GraphViewCell: UITableViewCell, LineChartDelegate {
+//protocol GraphViewCellDelegate{
+//    func myVCDidFinish(controller:FooTwoViewController,text:String)
+//}
+
+class GraphViewCell: UITableViewCell, LineChartDelegate, THDatePickerDelegate {
     
     var label = UILabel()
     var lineChart: LineChart!
-    var startDate = ""
-    var endDate = ""
+    var startDate:NSDate = NSDate()
+    var endDate:NSDate = NSDate()
+    var agoDays:Int = -15
     
     var amountArray = [CGFloat]()
     var dateArray = [String]()
@@ -23,6 +30,29 @@ class GraphViewCell: UITableViewCell, LineChartDelegate {
     @IBOutlet weak var segmentView: UISegmentedControl!
     @IBOutlet weak var startDateLbl: UILabel!
     @IBOutlet weak var endDateLbl: UILabel!
+    
+    var myView:UIViewController = UIViewController()
+    
+    //----------------Date-------------//
+    var curDate:NSDate = NSDate()
+    var formatter:NSDateFormatter!
+    var datePicker:THDatePickerViewController = {
+        var dp = THDatePickerViewController.datePicker()
+       // dp.delegate = self
+        dp.setAllowClearDate(false)
+        dp.setClearAsToday(true)
+        dp.setAutoCloseOnSelectDate(false)
+        dp.setAllowSelectionOfSelectedDate(true)
+        dp.setDisableHistorySelection(false)
+        dp.setDisableFutureSelection(true)
+        //dp.autoCloseCancelDelay = 5.0
+        dp.selectedBackgroundColor = UIColor(red: 125/255.0, green: 208/255.0, blue: 0/255.0, alpha: 1.0)
+        dp.currentDateColor = UIColor(red: 242/255.0, green: 121/255.0, blue: 53/255.0, alpha: 1.0)
+        dp.currentDateColorSelected = UIColor.yellowColor()
+        return dp
+    }()
+    //-----------------------------------//
+
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -58,52 +88,39 @@ class GraphViewCell: UITableViewCell, LineChartDelegate {
     @IBAction func segmentAction(sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0 {
             print("selectedSegmentIndex = 7Days")
+            agoDays = -7
+            startDate = NSDate()
+            setGraph()
         }
         else if sender.selectedSegmentIndex == 1 {
             print("selectedSegmentIndex = 15Days")
+            agoDays = -15
+            startDate = NSDate()
+            setGraph()
         }
         else if sender.selectedSegmentIndex == 2 {
             print("selectedSegmentIndex = month")
+            agoDays = -30
+            startDate = NSDate()
+            setGraph()
         }
         else if sender.selectedSegmentIndex == 3 {
             print("selectedSegmentIndex = Custom")
+            agoDays = 0
         }
+        
+        //sender.selectedSegmentIndex = UISegmentedControlNoSegment
     }
     
     func setGraph() {
-        
-        /*
-        let current = NSDate()
-        let sevenDaysAgo = NSCalendar.currentCalendar().dateByAddingUnit(.Day, value: -30,
-                                                                         toDate: NSDate(), options: NSCalendarOptions(rawValue: 0))
-        print("sevenDaysAgo : \(sevenDaysAgo)")
-        let realm = try! Realm()
-        let messages = realm.objects(AccountInfo).filter("transactionDate > %@ AND transactionDate <= %@", sevenDaysAgo!, current)
-        print("restult : \(messages)")
-        */
-        
-        
-        //let realm = try! Realm()
-        //let objs = realm.objects(AccountInfo).toArray()
-        
-        
-        //let realm = try! Realm()
-        //let objects = realm.objects(AccountInfo).toArray(AccountInfo) as [AccountInfo]
-        //print("restult array : \(objects)")
-        //let objects1 = realm.objects(AccountInfo).get(0, limit: 10)
-        //let objects1 = realm.objects(AccountInfo).filter("ANY amount")
-        //print("restult array 10 : \(objects1)")
-        
-        
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = .LongStyle
         
-        let current = NSDate()
-        let sevenDaysAgo = NSCalendar.currentCalendar().dateByAddingUnit(.Day, value: -15,
-                                                                         toDate: NSDate(), options: NSCalendarOptions(rawValue: 0))
-        print("sevenDaysAgo : \(sevenDaysAgo)")
+        endDate = NSCalendar.currentCalendar().dateByAddingUnit(.Day, value: agoDays,
+                                                                         toDate: NSDate(), options: NSCalendarOptions(rawValue: 0))!
+        print("sevenDaysAgo : \(endDate)")
         let realm = try! Realm()
-        let messages = realm.objects(AccountInfo).filter("transactionDate > %@ AND transactionDate <= %@", sevenDaysAgo!, current)
+        let messages = realm.objects(AccountInfo).filter("transactionDate > %@ AND transactionDate <= %@", endDate, startDate)
         print("restult : \(messages)")
         
         if messages.count > 0 {
@@ -122,8 +139,8 @@ class GraphViewCell: UITableViewCell, LineChartDelegate {
             }
         }
 
-        startDateLbl.text = dateFormatter.stringFromDate(current)
-        endDateLbl.text = dateFormatter.stringFromDate(sevenDaysAgo!)
+        startDateLbl.text = dateFormatter.stringFromDate(startDate)
+        endDateLbl.text = dateFormatter.stringFromDate(endDate)
         
         var views: [String: AnyObject] = [:]
         
@@ -136,17 +153,23 @@ class GraphViewCell: UITableViewCell, LineChartDelegate {
         gView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-00-[label]", options: [], metrics: nil, views: views))
         
         // simple arrays
-        let data: [CGFloat] = [3, 4, -2, 11, 13, 15] // Yaxis
+        // let data: [CGFloat] = [3, 4, -2, 11, 13, 15] // Yaxis
         let data2: [CGFloat] = amountArray//[100, 300, 500, 1300, 1700, 2000, 2900, 900, 1200, 2800, 3500, 1000] //ValueData
         
         // simple line with custom x axis labels
-       // let xLabels: [String] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-        let xLabels: [String] = dateArray//[" "," "]
+        // let xLabels: [String] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        let xLabels: [String] = dateArray //[" "," "]
         
         for tempView in gView.subviews {
             if tempView.isKindOfClass(LineChart) {
                 tempView.removeFromSuperview()
                 break
+            }
+        }
+        
+        for temp in gView.subviews {
+            if temp.isKindOfClass(LineChart) {
+                temp.removeFromSuperview()
             }
         }
         
@@ -169,10 +192,13 @@ class GraphViewCell: UITableViewCell, LineChartDelegate {
         gView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-[chart]-|", options: [], metrics: nil, views: views))
         gView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[label]-[chart(==200)]", options: [], metrics: nil, views: views))
         
+        
+       // showDate()
+        
     }
     
     func didSelectDataPoint(x: CGFloat, yValues: Array<CGFloat>) {
-        label.text = "Date: \(dateArray[Int(x)])   Rs: \(yValues)"
+        label.text = "Date: \(dateArray[Int(x)])   Rs: \(yValues.first!)"
     }
     
     func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
@@ -180,12 +206,78 @@ class GraphViewCell: UITableViewCell, LineChartDelegate {
             chart.setNeedsDisplay()
         }
     }
+    
+    //MARK:- Date Picker 
+    
+    func refreshTitle() {
+        //  dateButton.setTitle((curDate != nil ? formatter.stringFromDate(curDate) : "No date selected"), forState: UIControlState.Normal)
+       // print("current date \(curDate)")
+    }
+    
+    func showDate() {
+        
+        curDate = NSDate()
+        
+        datePicker.date = curDate
+        datePicker.setDateHasItemsCallback({(date:NSDate!) -> Bool in
+            let tmp = (arc4random() % 30) + 1
+            return tmp % 5 == 0
+        })
+        
+        let appDelegate:AppDelegate =  UIApplication.sharedApplication().delegate as! AppDelegate
+        appDelegate.window?.rootViewController!.presentSemiViewController(datePicker, withOptions:
+            [KNSemiModalOptionKeys.pushParentBack.takeRetainedValue():false,
+                KNSemiModalOptionKeys.parentAlpha.takeRetainedValue():1.0,
+                KNSemiModalOptionKeys.animationDuration.takeRetainedValue():0.3])
+        
+    }
+    
+    // MARK: THDatePickerDelegate
+    func datePickerDonePressed(datePicker: THDatePickerViewController!) {
+       // curDate = datePicker.date
+        refreshTitle()
+        let appDelegate:AppDelegate =  UIApplication.sharedApplication().delegate as! AppDelegate
+        appDelegate.window?.rootViewController!.dismissSemiModalView()
+    }
+    
+    func datePickerCancelPressed(datePicker: THDatePickerViewController!) {
+       // dismissSemiModalView()
+        let appDelegate:AppDelegate =  UIApplication.sharedApplication().delegate as! AppDelegate
+        appDelegate.window?.rootViewController!.dismissSemiModalView()
+    }
+    
+    func datePicker(datePicker: THDatePickerViewController!, selectedDate: NSDate!) {
+       // let tmp = formatter.stringFromDate(selectedDate)
+       // print("Date selected: \(tmp)")
+    }
 }
 
 
 
 
 
+
+/*
+ let current = NSDate()
+ let sevenDaysAgo = NSCalendar.currentCalendar().dateByAddingUnit(.Day, value: -30,
+ toDate: NSDate(), options: NSCalendarOptions(rawValue: 0))
+ print("sevenDaysAgo : \(sevenDaysAgo)")
+ let realm = try! Realm()
+ let messages = realm.objects(AccountInfo).filter("transactionDate > %@ AND transactionDate <= %@", sevenDaysAgo!, current)
+ print("restult : \(messages)")
+ */
+
+
+//let realm = try! Realm()
+//let objs = realm.objects(AccountInfo).toArray()
+
+
+//let realm = try! Realm()
+//let objects = realm.objects(AccountInfo).toArray(AccountInfo) as [AccountInfo]
+//print("restult array : \(objects)")
+//let objects1 = realm.objects(AccountInfo).get(0, limit: 10)
+//let objects1 = realm.objects(AccountInfo).filter("ANY amount")
+//print("restult array 10 : \(objects1)")
 
 
 

@@ -24,8 +24,8 @@ class DashboardVC: UIViewController, UITableViewDataSource, UITableViewDelegate,
         dp.setClearAsToday(true)
         dp.setAutoCloseOnSelectDate(false)
         dp.setAllowSelectionOfSelectedDate(true)
-        dp.setDisableHistorySelection(true)
-        dp.setDisableFutureSelection(false)
+        dp.setDisableHistorySelection(false)
+        dp.setDisableFutureSelection(true)
         //dp.autoCloseCancelDelay = 5.0
         dp.selectedBackgroundColor = UIColor(red: 125/255.0, green: 208/255.0, blue: 0/255.0, alpha: 1.0)
         dp.currentDateColor = UIColor(red: 242/255.0, green: 121/255.0, blue: 53/255.0, alpha: 1.0)
@@ -115,7 +115,8 @@ class DashboardVC: UIViewController, UITableViewDataSource, UITableViewDelegate,
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if(indexPath.row == 0) {
             let cell:GraphViewCell = (tblView.dequeueReusableCellWithIdentifier("GraphViewCell", forIndexPath: indexPath) as? GraphViewCell)!
-             cell.setGraph()
+            cell.myView = self
+            cell.setGraph()
             return cell
         }
         else if(indexPath.row == 1) {

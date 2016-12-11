@@ -59,36 +59,37 @@ class ViewController: UIViewController {
     }
     
     /*
-    @IBAction func bankBtnAction(_ sender: UIButton) {
-        for tempBtn in self.bankBtn as [UIButton] {
-            tempBtn.selected = false
-        }
-        sender.selected = true;
-    }
-    */
+     @IBAction func bankBtnAction(_ sender: UIButton) {
+     for tempBtn in self.bankBtn as [UIButton] {
+     tempBtn.selected = false
+     }
+     sender.selected = true;
+     }
+     */
     
     
     @IBAction func loginAction(sender: AnyObject) {
         /*
-        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
-        self.navigationController?.pushViewController(vc, animated: true)
-        */
-
+         let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+         let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
+         self.navigationController?.pushViewController(vc, animated: true)
+         return
+         */
         
-         if let authorizer = service.authorizer,
-         let canAuth = authorizer.canAuthorize where canAuth {
-         SwiftSpinner.show("Connecting to your gmail account...")
-         fetchLabels()
         
-        // SwiftSpinner.hide()
-        // let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
-        // let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
-        // self.navigationController?.pushViewController(vc, animated: true)
-         } else {
-         presentViewController(createAuthController(), animated: true, completion: nil)
-         }
- 
+        if let authorizer = service.authorizer,
+            let canAuth = authorizer.canAuthorize where canAuth {
+            SwiftSpinner.show("Connecting to your gmail account...")
+            fetchLabels()
+            
+            // SwiftSpinner.hide()
+            // let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+            // let vc : DashboardVC = mainStoryboard.instantiateViewControllerWithIdentifier("DashboardVC") as! DashboardVC
+            // self.navigationController?.pushViewController(vc, animated: true)
+        } else {
+            presentViewController(createAuthController(), animated: true, completion: nil)
+        }
+        
         
         
         // presentViewController(createAuthController(), animated: true, completion: nil)
@@ -172,7 +173,7 @@ class ViewController: UIViewController {
                 let parts = message.payload.body
                 var decodedBody: NSString?
                 if parts != nil {
-                   // let body: AnyObject? = parts.valueForKey("body")
+                    // let body: AnyObject? = parts.valueForKey("body")
                     if parts!.valueForKey("data") != nil {
                         var base64DataString =  parts!.valueForKey("data") as! String
                         base64DataString = base64DataString.stringByReplacingOccurrencesOfString("_", withString: "/", options: NSStringCompareOptions.LiteralSearch, range: nil)
@@ -202,8 +203,8 @@ class ViewController: UIViewController {
                     //debited
                     let debitedPattern : String = "[Dd][Ee][Bb][Ii][Tt][Ee][Dd]"
                     /*
-                    Your a/c 027012 is debited INR 2000.00 on 25-10-2015 21:59:26 A/c Bal is INR 15866.53 Info: CASH-ATM/01076095. Get Axis Mobile: m.axisbank.com/cwdl
-                    nYour a/c 027012 is debited INR 2.00 on 30-03-2016 22:47:55 Info: PUR/AMAZON INTERNET SERVIC/NEW DELHI/AMAZON INTERNET SERVIC
+                     Your a/c 027012 is debited INR 2000.00 on 25-10-2015 21:59:26 A/c Bal is INR 15866.53 Info: CASH-ATM/01076095. Get Axis Mobile: m.axisbank.com/cwdl
+                     nYour a/c 027012 is debited INR 2.00 on 30-03-2016 22:47:55 Info: PUR/AMAZON INTERNET SERVIC/NEW DELHI/AMAZON INTERNET SERVIC
                      */
                     
                     i += 1
@@ -215,7 +216,7 @@ class ViewController: UIViewController {
                         let regex : NSRegularExpression = try NSRegularExpression.init(pattern: currencyPattern, options: NSRegularExpressionOptions.CaseInsensitive)
                         if let  match =  regex.firstMatchInString(shortMessage, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, shortMessage.characters.count))
                         {
-                           // print("Amount : \((shortMessage as NSString).substringWithRange(match.range))")
+                            // print("Amount : \((shortMessage as NSString).substringWithRange(match.range))")
                             let val:String = ((shortMessage as NSString).substringWithRange(match.range))
                             let replaced = val.stringByReplacingOccurrencesOfString("INR", withString: "")
                             let trimmedString = replaced.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
@@ -305,12 +306,12 @@ class ViewController: UIViewController {
                     print (" ")
                     
                     /*
-                    ================ Start here====================
-                    Amount : 30148
-                    Account not found 1
-                    Information : Info not found
-                    Debited : NO
-                    ================ End here====================
+                     ================ Start here====================
+                     Amount : 30148
+                     Account not found 1
+                     Information : Info not found
+                     Debited : NO
+                     ================ End here====================
                      */
                     
                     //let scanner : NSScanner = NSScanner.init(string: shortMessage)
@@ -330,7 +331,7 @@ class ViewController: UIViewController {
                         accountInfo.transactionDate = date
                         accountInfo.transactionInfo = information
                         accountInfo.debitCredit = debited
-                                                
+                        
                         let queryRecordID = realm.objects(AccountInfo).filter("gMailId == '\(gMailId)'")
                         if queryRecordID.count == 0 {
                             try! realm.write {
