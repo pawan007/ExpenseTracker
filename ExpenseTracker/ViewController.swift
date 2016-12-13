@@ -79,6 +79,14 @@ class ViewController: UIViewController {
         
         if let authorizer = service.authorizer,
             let canAuth = authorizer.canAuthorize where canAuth {
+            
+            
+            print("email      = \(authorizer.userEmail)")
+            print("userDate   = \(service.serviceUserData)")
+           // print("properties = \(authorizer.properties)")
+            // print("properties = \(authResult.userProfile)")
+            // print("properties = \(authResult.signIn.userData)")
+            
             SwiftSpinner.show("Connecting to your gmail account...")
             fetchLabels()
             
@@ -391,6 +399,13 @@ class ViewController: UIViewController {
             return
         }
         service.authorizer = authResult
+        
+        print("email      = \(authResult.userEmail)")
+        print("userDate   = \(authResult.userData)")
+        print("properties = \(authResult.properties)")
+       // print("properties = \(authResult.userProfile)")
+       // print("properties = \(authResult.signIn.userData)")
+        
         dismissViewControllerAnimated(true, completion: nil)
         
         if let authorizer = service.authorizer,
